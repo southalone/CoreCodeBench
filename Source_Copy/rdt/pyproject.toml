@@ -1,0 +1,247 @@
+[project]
+name = 'rdt'
+description = 'Reversible Data Transforms'
+authors = [{ name = 'DataCebo, Inc.', email = 'info@sdv.dev' }]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'License :: Free for non-commercial use',
+    'Natural Language :: English',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+keywords = ['machine learning', 'synthetic data generation', 'benchmark', 'generative models']
+dynamic = ['version']
+license = { text = 'BSL-1.1' }
+requires-python = '>=3.8,<3.14'
+readme = 'README.md'
+dependencies = [
+    "numpy>=1.21.0;python_version<'3.10'",
+    "numpy>=1.23.3;python_version>='3.10' and python_version<'3.12'",
+    "numpy>=1.26.0;python_version>='3.12' and python_version<'3.13'",
+    "numpy>=2.1.0;python_version>='3.13'",
+    "pandas>=1.4.0;python_version<'3.11'",
+    "pandas>=1.5.0;python_version>='3.11' and python_version<'3.12'",
+    "pandas>=2.1.1;python_version>='3.12' and python_version<'3.13'",
+    "pandas>=2.2.3;python_version>='3.13'",
+    "scipy>=1.7.3;python_version<'3.10'",
+    "scipy>=1.9.2;python_version>='3.10' and python_version<'3.12'",
+    "scipy>=1.12.0;python_version>='3.12' and python_version<'3.13'",
+    "scipy>=1.14.1;python_version>='3.13'",
+    "scikit-learn>=1.0.2;python_version<'3.10'",
+    "scikit-learn>=1.1.0;python_version>='3.10' and python_version<'3.11'",
+    "scikit-learn>=1.1.3;python_version>='3.11' and python_version<'3.12'",
+    "scikit-learn>=1.3.1;python_version>='3.12' and python_version<'3.13'",
+    "scikit-learn>=1.5.2;python_version>='3.13'",
+    'Faker>=17',
+]
+
+[project.urls]
+"Source Code"= "https://github.com/sdv-dev/RDT/"
+"Issue Tracker" = "https://github.com/sdv-dev/RDT/issues"
+"Changes" = "https://github.com/sdv-dev/RDT/blob/main/HISTORY.md"
+"Twitter" = "https://twitter.com/sdv_dev"
+"Chat" = "https://bit.ly/sdv-slack-invite"
+
+[project.entry-points]
+rdt = { main = 'rdt.cli.__main__:main' }
+
+[project.optional-dependencies]
+copulas = ['copulas>=0.12.1',]
+pyarrow = ['pyarrow>=17.0.0',]
+test = [
+    'rdt[pyarrow]',
+    'rdt[copulas]',
+
+    'pytest>=3.4.2',
+    'pytest-cov>=2.6.0',
+    'jupyter>=1.0.0,<2',
+    'pytest-subtests>=0.5,<1.0',
+    'pytest-runner >= 2.11.1',
+    'tomli>=2.0.0,<3',
+]
+dev = [
+    'rdt[test]',
+
+    # general
+    'build>=1.0.0,<2',
+    'bump-my-version>=0.18.3',
+    'pip>=9.0.1',
+    'watchdog>=1.0.1,<5',
+
+    # style check
+    'ruff>=0.3.2,<1',
+
+    # distribute on PyPI
+    'twine>=1.10.0',
+    'wheel>=0.30.0',
+
+    # Advanced testing
+    'coverage>=4.5.12,<8',
+    'tox>=2.9.1,<5',
+    'tabulate>=0.8.9,<1',
+
+    # Invoking test commands
+    'invoke',
+]
+readme = ['rundoc>=0.4.3,<0.5',]
+
+[tool.setuptools]
+include-package-data = true
+license-files = ['LICENSE']
+
+[tool.setuptools.packages.find]
+include = ['rdt', 'rdt.*']
+namespaces = false
+
+[tool.setuptools.package-data]
+'*' = [
+    'AUTHORS.rst',
+    'CONTRIBUTING.rst',
+    'HISTORY.md',
+    'README.md',
+    'RELEASE.md',
+    '*.md',
+    '*.rst',
+    'conf.py',
+    'Makefile',
+    'make.bat',
+    '*.jpg',
+    '*.png',
+    '*.gif'
+]
+
+[tool.setuptools.exclude-package-data]
+'*' = [
+    '* __pycache__',
+    '*.py[co]',
+    'static_code_analysis.txt',
+]
+
+[tool.setuptools.dynamic]
+version = {attr = 'rdt.__version__'}
+
+[tool.isort]
+line_length = 99
+lines_between_types = 0
+multi_line_output = 4
+use_parentheses = true
+
+[tool.pydocstyle]
+convention = 'google'
+add-ignore = ['D107', 'D407', 'D417']
+
+[tool.pytest.ini_options]
+collect_ignore = ['pyproject.toml']
+
+[tool.coverage.report]
+exclude_lines = ['NotImplementedError()']
+
+[tool.bumpversion]
+current_version = "1.16.1.dev0"
+parse = '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(\.(?P<release>[a-z]+)(?P<candidate>\d+))?'
+serialize = [
+    '{major}.{minor}.{patch}.{release}{candidate}',
+	'{major}.{minor}.{patch}'
+]
+search = '{current_version}'
+replace = '{new_version}'
+regex = false
+ignore_missing_version = false
+tag = true
+sign_tags = false
+tag_name = 'v{new_version}'
+tag_message = 'Bump version: {current_version} → {new_version}'
+allow_dirty = false
+commit = true
+message = 'Bump version: {current_version} → {new_version}'
+commit_args = ''
+
+[tool.bumpversion.parts.release]
+first_value = 'dev'
+optional_value = 'release'
+values = [
+    'dev',
+    'release'
+]
+
+[[tool.bumpversion.files]]
+filename = "rdt/__init__.py"
+search = "__version__ = '{current_version}'"
+replace = "__version__ = '{new_version}'"
+
+[build-system]
+requires = ['setuptools', 'wheel']
+build-backend = 'setuptools.build_meta'
+
+[tool.ruff]
+preview = true
+line-length = 100
+indent-width = 4
+src = ["rdt"]
+exclude = [
+    'docs',
+    '.tox',
+    '.git',
+    '__pycache__',
+    '*.ipynb',
+    '.ipynb_checkpoints',
+    'tasks.py',
+    'tests/contributing.py'
+]
+
+[tool.ruff.lint]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # pydocstyle
+    "D",
+    # isort
+    "I001",
+    # print statements
+    "T201",
+    # pandas-vet
+    "PD",
+    # numpy 2.0
+    "NPY201"
+]
+ignore = [
+    # pydocstyle
+    "D107",  # Missing docstring in __init__
+    "D417",   # Missing argument descriptions in the docstring, this is a bug from pydocstyle: https://github.com/PyCQA/pydocstyle/issues/449
+    "PD901",
+    "PD101",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+preview = true
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.isort]
+known-first-party = ["rdt"]
+lines-between-types = 0
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "E402", "F403", "F405", "E501", "I001"]
+"errors.py" = ["D105"]
+"tests/**.py" = ["D"]
+"tests/contributing.py" = ["T201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 100
+max-line-length = 100

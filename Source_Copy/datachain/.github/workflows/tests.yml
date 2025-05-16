@@ -1,0 +1,180 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: "1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-suffix: lint
+          cache-dependency-glob: pyproject.toml
+
+      - name: Install nox
+        run: uv pip install nox --system
+
+      - name: Cache mypy
+        uses: actions/cache@v4
+        with:
+          path: .mypy_cache
+          key: mypy-${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+
+      - name: Cache pre-commit hooks
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Lint code
+        run: nox -s lint
+
+  datachain:
+    timeout-minutes: 40
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest-8-cores]
+        pyv: ['3.9', '3.10', '3.11', '3.12']
+        include:
+          - os: macos-latest
+            pyv: '3.9'
+          - os: macos-latest
+            pyv: '3.12'
+          - os: windows-latest
+            pyv: '3.9'
+          - os: windows-latest
+            pyv: '3.12'
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Set up FFmpeg
+        uses: AnimMouse/setup-ffmpeg@v1
+
+      - name: Set up Python ${{ matrix.pyv }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyv }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-suffix: tests-${{ matrix.pyv }}
+          cache-dependency-glob: pyproject.toml
+
+      - name: Install nox
+        run: uv pip install nox --system
+
+      - name: Skip flaky azure, gs remotes on macOS
+        if: runner.os == 'macOS'
+        run: echo 'DISABLE_REMOTES_ARG=--disable-remotes=azure,gs' >> "$GITHUB_ENV"
+
+      - name: Skip all remotes on Windows
+        if: runner.os == 'Windows'
+        run: echo 'DISABLE_REMOTES_ARG=--disable-remotes=azure,gs' >> $env:GITHUB_ENV
+
+      - name: Run tests
+        run: nox -s tests-${{ matrix.pyv }} -- -m "not e2e and not examples" $DISABLE_REMOTES_ARG
+        shell: bash
+
+      - name: Run E2E tests
+        run: nox -s tests-${{ matrix.pyv }} -- -m "e2e" --cov-append $DISABLE_REMOTES_ARG
+        shell: bash
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: datachain
+
+      - name: Build package
+        run: nox -s build
+
+      - name: Build docs
+        run: nox -s docs
+
+  examples:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        pyv: ['3.9', '3.12']
+        group: ['get_started', 'computer_vision', 'llm_and_nlp', 'multimodal']
+        exclude:
+          - {os: ubuntu-latest, pyv: '3.9', group: 'multimodal'}
+          - {os: ubuntu-latest, pyv: '3.12', group: 'multimodal'}
+        include:
+          - {os: ubuntu-latest-4-cores, pyv: "3.9", group: multimodal}
+          - {os: ubuntu-latest-4-cores, pyv: "3.12", group: multimodal}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Set up Python ${{ matrix.pyv }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyv }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-suffix: examples-${{ matrix.pyv }}
+          cache-dependency-glob: pyproject.toml
+
+      - name: Install nox
+        run: uv pip install nox --system
+
+      # HF runs against actual API - thus run it only once
+      - name: Set hf token
+        if: matrix.os == 'ubuntu-latest' && matrix.pyv == '3.12'
+        run: echo 'HF_TOKEN=${{ secrets.HF_TOKEN }}' >> "$GITHUB_ENV"
+
+      - name: Run examples
+        run: nox -s examples -p ${{ matrix.pyv }} -- -m "${{ matrix.group }}"
+
+  check:
+    if: always()
+    needs: [lint, datachain, examples]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@release/v1
+        with:
+          allowed-failures: examples
+          jobs: ${{ toJSON(needs) }}

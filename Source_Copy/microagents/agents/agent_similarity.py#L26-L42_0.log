@@ -1,0 +1,139 @@
+=========================================================== test session starts ============================================================
+platform linux -- Python 3.10.12, pytest-8.3.3, pluggy-1.5.0
+rootdir: /mnt/coai_nas/qianhu/github/completion_benchmark
+plugins: anyio-4.4.0, timeout-2.3.1
+timeout: 120.0s
+timeout method: thread
+timeout func_only: False
+collected 1 item
+
+Source_Code/microagents/tests/test_agent_similarity.py F                                                                             [100%]
+
+================================================================= FAILURES =================================================================
+_______________________________________________ TestAgentSimilarity.test_find_closest_agent ________________________________________________
+
+self = <agents.agent_similarity.AgentSimilarity object at 0x7f0cbde2a7d0>, purpose_embedding = array([0.4, 0.5, 0.6])
+
+    def find_closest_agent(self, purpose_embedding: np.ndarray) -> Tuple[Optional[Agent], float]:
+        """
+        Finds the closest agent based on the given purpose embedding.
+    
+        :param purpose_embedding: The embedding of the purpose to find the closest agent for.
+        :return: Tuple of the closest agent and the highest similarity score.
+        """
+        closest_agent: Optional[Agent] = None
+        highest_similarity: float = -np.inf
+    
+        try:
+            for agent in self.agents:
+                if agent.purpose_embedding is None:
+                   agent.purpose_embedding = self.get_embedding(agent.purpose)
+    
+>               similarity = cosine_similarity([agent.purpose_embedding], [purpose_embedding])[0][0]
+
+Source_Code/microagents/agents/agent_similarity.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/_param_validation.py:213: in wrapper
+    return func(*args, **kwargs)
+Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/metrics/pairwise.py:1679: in cosine_similarity
+    X, Y = check_pairwise_arrays(X, Y)
+Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/metrics/pairwise.py:185: in check_pairwise_arrays
+    X = check_array(
+Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/validation.py:1012: in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+array = array([{'data': [{'embedding': [0.1, 0.2, 0.3]}]}], dtype=object), dtype = dtype('float64'), order = None, copy = None
+
+    def _asarray_with_order(
+        array, dtype=None, order=None, copy=None, *, xp=None, device=None
+    ):
+        """Helper to support the order kwarg only for NumPy-backed arrays
+    
+        Memory layout parameter `order` is not exposed in the Array API standard,
+        however some input validation code in scikit-learn needs to work both
+        for classes and functions that will leverage Array API only operations
+        and for code that inherently relies on NumPy backed data containers with
+        specific memory layout constraints (e.g. our own Cython code). The
+        purpose of this helper is to make it possible to share code for data
+        container validation without memory copies for both downstream use cases:
+        the `order` parameter is only enforced if the input array implementation
+        is NumPy based, otherwise `order` is just silently ignored.
+        """
+        xp, _ = get_namespace(array, xp=xp)
+        if _is_numpy_namespace(xp):
+            # Use NumPy API to support order
+            if copy is True:
+                array = numpy.array(array, order=order, dtype=dtype)
+            else:
+>               array = numpy.asarray(array, order=order, dtype=dtype)
+E               TypeError: float() argument must be a string or a real number, not 'dict'
+
+Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/_array_api.py:751: TypeError
+
+During handling of the above exception, another exception occurred:
+
+self = <test_agent_similarity.TestAgentSimilarity testMethod=test_find_closest_agent>
+
+    def test_find_closest_agent(self):
+        self.mock_openai_wrapper.get_embedding.side_effect = [
+            {'data': [{'embedding': [0.1, 0.2, 0.3]}]},
+            {'data': [{'embedding': [0.4, 0.5, 0.6]}]},
+            {'data': [{'embedding': [0.7, 0.8, 0.9]}]}
+        ]
+    
+        test_purpose_embedding = np.array([0.4, 0.5, 0.6])
+>       closest_agent, similarity = self.agent_similarity.find_closest_agent(test_purpose_embedding)
+
+Source_Code/microagents/tests/test_agent_similarity.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <agents.agent_similarity.AgentSimilarity object at 0x7f0cbde2a7d0>, purpose_embedding = array([0.4, 0.5, 0.6])
+
+    def find_closest_agent(self, purpose_embedding: np.ndarray) -> Tuple[Optional[Agent], float]:
+        """
+        Finds the closest agent based on the given purpose embedding.
+    
+        :param purpose_embedding: The embedding of the purpose to find the closest agent for.
+        :return: Tuple of the closest agent and the highest similarity score.
+        """
+        closest_agent: Optional[Agent] = None
+        highest_similarity: float = -np.inf
+    
+        try:
+            for agent in self.agents:
+                if agent.purpose_embedding is None:
+                   agent.purpose_embedding = self.get_embedding(agent.purpose)
+    
+                similarity = cosine_similarity([agent.purpose_embedding], [purpose_embedding])[0][0]
+    
+                if similarity > highest_similarity:
+                    highest_similarity = similarity
+                    closest_agent = agent
+    
+            return closest_agent, highest_similarity
+        except Exception as e:
+            logger.exception(f"Error finding closest agent: {e}")
+>           raise ValueError(f"Error finding closest agent: {e}")
+E           ValueError: Error finding closest agent: float() argument must be a string or a real number, not 'dict'
+
+Source_Code/microagents/agents/agent_similarity.py:88: ValueError
+------------------------------------------------------------ Captured log call -------------------------------------------------------------
+ERROR    root:agent_similarity.py:87 Error finding closest agent: float() argument must be a string or a real number, not 'dict'
+Traceback (most recent call last):
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/agents/agent_similarity.py", line 79, in find_closest_agent
+    similarity = cosine_similarity([agent.purpose_embedding], [purpose_embedding])[0][0]
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 213, in wrapper
+    return func(*args, **kwargs)
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/metrics/pairwise.py", line 1679, in cosine_similarity
+    X, Y = check_pairwise_arrays(X, Y)
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/metrics/pairwise.py", line 185, in check_pairwise_arrays
+    X = check_array(
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/validation.py", line 1012, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/myenv/lib/python3.10/site-packages/sklearn/utils/_array_api.py", line 751, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+TypeError: float() argument must be a string or a real number, not 'dict'
+========================================================= short test summary info ==========================================================
+FAILED Source_Code/microagents/tests/test_agent_similarity.py::TestAgentSimilarity::test_find_closest_agent - ValueError: Error finding c...
+============================================================ 1 failed in 2.20s =============================================================

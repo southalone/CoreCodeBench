@@ -1,0 +1,107 @@
+[project]
+name = "cloudnetpy"
+description = "Python package for Cloudnet processing"
+authors = [{name = "Simo Tukiainen"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dependencies = [
+  "ceilopyter",
+  "doppy>=0.5.0",
+  "matplotlib",
+  "mwrpy>=1.2.0",
+  "netCDF4",
+  "requests",
+  "rpgpy>=0.14.5",
+  "scikit-image",
+  "scipy",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+  "cloudnetpy_qc",
+  "mypy",
+  "pytest",
+  "pytest-flakefinder",
+  "ruff",
+  "types-requests",
+]
+dev = ["pre-commit", "release-version"]
+extras = ["voodoonet>=0.1.7"]
+
+[project.scripts]
+cloudnetpy = "cloudnetpy.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/actris-cloudnet/cloudnetpy"
+Documentation = "https://actris-cloudnet.github.io/cloudnetpy/"
+Repository = "https://github.com/actris-cloudnet/cloudnetpy"
+Changelog = "https://github.com/actris-cloudnet/cloudnetpy/blob/main/CHANGELOG.md"
+
+[tool.mypy]
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["mpl_toolkits.*", "scipy.*", "voodoonet.*"]
+ignore_missing_imports = true
+
+[tool.release-version]
+filename = "cloudnetpy/version.py"
+pattern = ["MAJOR = (?P<major>\\d+)", "MINOR = (?P<minor>\\d+)", "PATCH = (?P<patch>\\d+)"]
+changelog = "CHANGELOG.md"
+
+[tool.ruff.lint]
+exclude = ["cloudnetpy/model_evaluation/tests/*", "tests/*"]
+select = ["ALL"]
+ignore = [
+  "ANN", # missing types, use mypy for this
+  "C9", # too complex, fix me later
+  "COM812", # Formatting
+  "D100", # allow missing documentation
+  "D101", # allow missing documentation
+  "D102", # allow missing documentation
+  "D103", # allow missing documentation
+  "D104", # allow missing documentation
+  "D105", # allow missing documentation
+  "D106", # allow missing documentation
+  "D107", # allow missing documentation
+  "D205", # allow long multi-line summary
+  "D211", # conflicting documentation rule
+  "D213", # conflicting documentation rule
+  "DTZ00", # do not check timezone info
+  "FIX002", # TODOs
+  "ISC001", # Formatter wants me
+  "N8", # uppercase variable names
+  "PD011", # false positive
+  "PERF", # try except in loop
+  "PLR", # too many arguments etc.
+  "PTH", # use pathlib, fix me later
+  "RUF002", # unicode in doc string
+  "TD002", # TODOs
+  "TD003", # TODOs
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.setuptools.dynamic]
+version = {attr = "cloudnetpy.version.__version__"}
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.tomlsort]
+trailing_comma_inline_array = true
+sort_inline_arrays = true

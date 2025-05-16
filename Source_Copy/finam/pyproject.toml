@@ -1,0 +1,159 @@
+[build-system]
+requires = [
+    "hatchling>=1.8.0",
+    "hatch-vcs",
+]
+build-backend = "hatchling.build"
+
+[project]
+requires-python = ">=3.8"
+name = "finam"
+description = "FINAM is not a model."
+authors = [{name = "FINAM Developers", email = "finam@ufz.de"}]
+readme = "README.md"
+license = "LGPL-3.0"
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Natural Language :: English",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "numpy>=1.17.0",
+    "scipy>=1.9.0",
+    "pyevtk>=1.6.0",
+    "pint >=0.20, !=0.24.0",
+    "packaging",
+    "pyproj>=3.4",
+    "pandas>=1.3",
+    "opensimplex>=0.4",
+]
+
+[project.urls]
+Homepage = "https://FINAM.pages.ufz.de/"
+Documentation = "https://FINAM.pages.ufz.de/finam/"
+Source = "https://git.ufz.de/FINAM/finam"
+Tracker = "https://git.ufz.de/FINAM/finam/-/issues"
+Changelog = "https://git.ufz.de/FINAM/finam/-/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+doc = [
+    "sphinx>=6",
+    "pydata-sphinx-theme==0.13",
+    "numpydoc>=1.1",
+    "sphinx-design>=0.4",
+    "myst-parser>=1.0",
+    "sphinxcontrib-mermaid>=0.7",
+    "ablog>=0.10",
+    "docutils>=0.18", # mdinclude with myst
+    "matplotlib>=3",
+]
+test = [
+    "pygal==3.0.0",
+    "pytest-cov>=3",
+    "pytest-benchmark[histogram]>=4.0",
+]
+
+[tool.hatch.version]
+source = "vcs"
+fallback_version = "0.0.0.dev0"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/finam/_version.py"
+template = "__version__ = '{version}'"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finam"]
+
+[tool.black]
+exclude = "_version.py"
+target-version = [
+    "py38",
+    "py39",
+    "py310",
+    "py311",
+    "py312",
+    # "py313",
+]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.coverage]
+    [tool.coverage.run]
+    source = ["finam"]
+    omit = [
+        "*docs*",
+        "*examples*",
+        "*tests*",
+        "*/src/finam/tools/wurlitzer.py",
+    ]
+
+    [tool.coverage.report]
+    exclude_lines = [
+        "pragma: no cover",
+        "def __repr__",
+        "def __str__",
+    ]
+
+[tool.pylint]
+    [tool.pylint.master]
+    extension-pkg-whitelist = [
+        "numpy",
+        "scipy",
+        "mpi4py",
+    ]
+    ignore = [
+        "_version.py",
+        "wurlitzer.py",
+    ]
+
+    [tool.pylint.message_control]
+    max-line-length = 120
+    disable = [
+        "C0103", # ignore invalid-names like "x", "y"
+        "C0415", # ignore defered imports
+        "R0801", # ignore code duplications
+    ]
+
+    [tool.pylint.reports]
+    output-format = "colorized"
+
+    [tool.pylint.design]
+    max-args = 15
+    max-locals = 20
+    max-attributes = 15
+    max-parents = 10
+    min-public-methods = 0
+    max-public-methods = 25
+    max-positional-arguments = 15
+    max-returns = 10

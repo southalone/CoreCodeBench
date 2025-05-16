@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="91" height="25" version="1.1" viewBox="0 0 91 25" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#ffa600">
+    <path d="m6.2317 24 1.7214-5h11.047v5z"/>
+    <path d="m10.375 12 1.7344-5h12.391v5z"/>
+    <path d="m24.961 1-7.9609 23h6.8281l-1-2.5352 1.4082-3.4648h2.7637v-17z"/>
+    <path d="m25 24-1-2.5351 1-2.4649h3l1 5z"/>
+  </g>
+  <g fill="#005aa0">
+    <path d="m 6.1719,1 1,2.5352 L 5.7637,7 H 3 V 24 H 5.0391 L 13,1 Z"/>
+    <path d="m23.768 1-1.7214 5h-11.047v-5z"/>
+    <path d="m19.625 13-1.7344 5h-12.391v-5z"/>
+    <path d="M 5,1 6,3.5351 5,6 H 2 L 1,1 Z"/>
+  </g>
+  <text x="30" y="15" fill="#005aa0" font-family="Arial" font-size="19.6px" font-weight="bold">
+    FINAM
+  </text>
+  <text x="31" y="24" fill="#ffa600" font-family="Arial" font-size="7.3px" font-weight="bold">
+    IS NOT A MODEL
+  </text>
+</svg>

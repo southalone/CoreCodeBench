@@ -1,0 +1,61 @@
+gradio
+prettytable
+termcolor
+colorama
+terminaltables
+openai==1.12.0
+textual
+
+# Core Libraries
+numpy
+pandas
+requests
+beautifulsoup4
+matplotlib
+seaborn
+
+# Database
+sqlalchemy
+pymysql
+
+# Data Analysis and Visualization
+scipy
+scikit-learn
+statsmodels
+
+# Utility Libraries
+click
+python-dotenv
+virtualenv
+feedparser
+
+# Web Scraping
+scrapy
+
+# API Integration
+oauthlib
+tweepy
+requests
+
+# Date and Time
+datetime
+
+# File Handling
+openpyxl
+xlrd
+
+# Logging
+wikipedia
+loguru
+
+# Testing
+pytest
+
+# Networking
+paramiko
+
+# Security
+cryptography
+
+# Parsing
+lxml

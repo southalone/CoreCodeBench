@@ -1,0 +1,37 @@
+=========================================================== test session starts ============================================================
+platform linux -- Python 3.10.12, pytest-8.3.3, pluggy-1.5.0
+rootdir: /mnt/coai_nas/qianhu/github/completion_benchmark
+plugins: anyio-4.4.0, timeout-2.3.1
+timeout: 120.0s
+timeout method: thread
+timeout func_only: False
+collected 1 item
+
+Source_Code/microagents/tests/test_agent_lifecycle.py F                                                                              [100%]
+
+================================================================= FAILURES =================================================================
+________________________________________ TestAgentLifecycle.test_generate_llm_prompt_returns_prompt ________________________________________
+
+self = <test_agent_lifecycle.TestAgentLifecycle testMethod=test_generate_llm_prompt_returns_prompt>
+
+    def test_generate_llm_prompt_returns_prompt(self):
+        expected_prompt = "generated_prompt"
+        self.openai_wrapper_mock.chat_completion.return_value = expected_prompt
+        actual_prompt = self.agent_lifecycle._generate_llm_prompt("goal", "sample_input")
+    
+>       self.assertEqual(actual_prompt, expected_prompt)
+E       AssertionError: '' != 'generated_prompt'
+E       + generated_prompt
+
+Source_Code/microagents/tests/test_agent_lifecycle.py:44: AssertionError
+------------------------------------------------------------ Captured log call -------------------------------------------------------------
+ERROR    root:agent_lifecycle.py:126 Error generating LLM prompt: Mock object has no attribute 'get_response'
+Traceback (most recent call last):
+  File "/mnt/coai_nas/qianhu/github/completion_benchmark/Source_Code/microagents/agents/agent_lifecycle.py", line 123, in _generate_llm_prompt
+    response = self.openai_wrapper.get_response(messages)
+  File "/usr/lib/python3.10/unittest/mock.py", line 643, in __getattr__
+    raise AttributeError("Mock object has no attribute %r" % name)
+AttributeError: Mock object has no attribute 'get_response'
+========================================================= short test summary info ==========================================================
+FAILED Source_Code/microagents/tests/test_agent_lifecycle.py::TestAgentLifecycle::test_generate_llm_prompt_returns_prompt - AssertionErro...
+============================================================ 1 failed in 2.53s =============================================================

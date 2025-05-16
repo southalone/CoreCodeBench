@@ -1,0 +1,14 @@
+input/
+output/
+*.nc
+.idea/
+.vscode/
+venv/
+*__pycache__*
+tests/source_data/
+*egg-info*
+build/
+dist/
+.eggs/
+scripts/
+*~

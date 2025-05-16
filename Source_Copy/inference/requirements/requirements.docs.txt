@@ -1,0 +1,23 @@
+cairosvg
+mike
+mkdocs-gen-files
+mkdocs-jupyter
+mkdocs-literate-nav
+mkdocs-macros-plugin
+mkdocs-material[imaging]
+mkdocs-material
+mkdocs-ezlinks-plugin
+mkdocs-swagger-ui-tag
+mkdocs
+mkdocstrings[python]
+pillow
+jinja2
+
+# Pin due to a compatibility issue between
+# nbconvert, mistune, and the mkdocs-jupyter plugin.
+# Specifically, the MathBlockParser class in the mistune
+# library is trying to access a method parse_axt_heading,
+# which likely stems from a typo or mismatch in versions
+# between the libraries.
+mistune==2.0.4
+nbconvert==7.7.4
