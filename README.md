@@ -90,6 +90,3 @@ conda activate {repo_name_env}
 
 ## License
 This project is licensed under the MIT License.
-
-## Contact
-For questions or feedback, please open an issue or contact fulingyue@sjtu.edu.cn.
