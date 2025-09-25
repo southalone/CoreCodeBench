@@ -1,5 +1,5 @@
 # CoreCodeBench
-[CoreCodeBench] is a configurable, multi-scenario repository-level benchmark designed to comprehensively evaluate the engineering capabilities of Large Language Models (LLMs) in real-world software development tasks. Built on the automated pipeline CorePipe, CoreCodeBench transforms open-source repositories into diverse, controllable, and reliable benchmark cases, covering development, bug fixing, and test-driven development (TDD) scenarios.
+CoreCodeBench is a configurable, multi-scenario repository-level benchmark designed to comprehensively evaluate the engineering capabilities of Large Language Models (LLMs) in real-world software development tasks. Built on the automated pipeline CorePipe, CoreCodeBench transforms open-source repositories into diverse, controllable, and reliable benchmark cases, covering development, bug fixing, and test-driven development (TDD) scenarios.
 
 ## Quick Start
 
